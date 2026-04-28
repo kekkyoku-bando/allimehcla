@@ -23,17 +23,33 @@ pub fn Home() -> Element {
 
 #[component]
 fn Content(images: ReadSignal<HashMap<String, Vec<Image>>>) -> Element {
-    let map = images();
+    let sorted_images = use_memo(move || {
+        let map = images();
+        let mut all_images: Vec<Image> = map.values().flat_map(|v| v.iter().cloned()).collect();
+        all_images.sort_by_key(|image| image.time);
+        all_images
+    });
+
+    let columns = use_memo(move || {
+        let sorted = sorted_images();
+        let num_cols = 4;
+        let mut cols: Vec<Vec<Image>> = vec![vec![]; num_cols];
+        for (i, img) in sorted.iter().enumerate() {
+            cols[i % num_cols].push(img.clone());
+        }
+        cols
+    });
 
     rsx! {
-        for year in map.keys() {
-            div { class: "flex flex-col",
-                p { class: "text-xl", "{year}" }
-                div { class: "grid auto-cols-max grid-flow-col gap-3",
-                    for image in map.get(year).expect("has key") {
-                        img {
-                            class: "w-auto max-h-128",
-                            src: format!("data:image/png;base64, {}", image.base64),
+        div { class: "grid grid-cols-4 gap-4",
+            for column in columns() {
+                div { class: "grid gap-4",
+                    for image in column {
+                        div {
+                            img {
+                                class: "h-auto max-w-full rounded-base",
+                                src: format!("data:image/png;base64, {}", image.base64),
+                            }
                         }
                     }
                 }
