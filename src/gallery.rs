@@ -1,4 +1,4 @@
-use std::cmp::Ordering;
+use std::cmp::{Ordering, Reverse};
 use std::collections::HashMap;
 use std::sync::LazyLock;
 
@@ -39,10 +39,26 @@ static IMAGES: LazyLock<Vec<Image>> = LazyLock::new(|| {
             },
         },
         Image {
+            asset: asset!("/assets/images/2025_05_12.png"),
+            time: ImageTime::Specific {
+                day: 12,
+                month: 5,
+                year: 2025,
+            },
+        },
+        Image {
             asset: asset!("/assets/images/2025_07_24.png"),
             time: ImageTime::Specific {
                 day: 24,
                 month: 7,
+                year: 2025,
+            },
+        },
+        Image {
+            asset: asset!("/assets/images/2025_09_15.png"),
+            time: ImageTime::Specific {
+                day: 15,
+                month: 9,
                 year: 2025,
             },
         },
@@ -52,6 +68,54 @@ static IMAGES: LazyLock<Vec<Image>> = LazyLock::new(|| {
                 day: 11,
                 month: 11,
                 year: 2025,
+            },
+        },
+        Image {
+            asset: asset!("/assets/images/2026_01_14.png"),
+            time: ImageTime::Specific {
+                day: 14,
+                month: 1,
+                year: 2026,
+            },
+        },
+        Image {
+            asset: asset!("/assets/images/2026_01_14_czn.png"),
+            time: ImageTime::Specific {
+                day: 14,
+                month: 1,
+                year: 2026,
+            },
+        },
+        Image {
+            asset: asset!("/assets/images/2026_01_25.png"),
+            time: ImageTime::Specific {
+                day: 25,
+                month: 1,
+                year: 2026,
+            },
+        },
+        Image {
+            asset: asset!("/assets/images/2026_02_07.png"),
+            time: ImageTime::Specific {
+                day: 7,
+                month: 2,
+                year: 2026,
+            },
+        },
+        Image {
+            asset: asset!("/assets/images/2026_02_24.png"),
+            time: ImageTime::Specific {
+                day: 24,
+                month: 2,
+                year: 2026,
+            },
+        },
+        Image {
+            asset: asset!("/assets/images/2026_02_24_2.png"),
+            time: ImageTime::Specific {
+                day: 24,
+                month: 2,
+                year: 2026,
             },
         },
         Image {
@@ -159,7 +223,7 @@ fn Content(images: ReadSignal<HashMap<Option<u32>, Vec<Image>>>) -> Element {
         let mut sorted_columns: HashMap<Option<u32>, Vec<Vec<Image>>> = HashMap::new();
 
         for (year, mut images) in grouped_by_years {
-            images.sort_by_key(|image| image.time);
+            images.sort_by_key(|image| Reverse(image.time));
 
             let cols = sorted_columns
                 .entry(year)
@@ -171,9 +235,7 @@ fn Content(images: ReadSignal<HashMap<Option<u32>, Vec<Image>>>) -> Element {
 
         let mut sorted_years: Vec<(Option<u32>, Vec<Vec<Image>>)> =
             sorted_columns.into_iter().collect();
-        sorted_years.sort_by(|(first, _), (second, _)| {
-            second.unwrap_or(u32::MIN).cmp(&first.unwrap_or(u32::MIN))
-        });
+        sorted_years.sort_by_key(|(year, _)| Reverse(year.unwrap_or(u32::MIN)));
         sorted_years
             .into_iter()
             .map(|(year, columns)| {
@@ -188,17 +250,29 @@ fn Content(images: ReadSignal<HashMap<Option<u32>, Vec<Image>>>) -> Element {
     });
 
     rsx! {
-        for (year, columns) in sorted() {
-            div { class: "flex flex-col mb-2",
-                p { class: "text-4xl mb-4", {year} }
-                div { class: "grid grid-cols-4 gap-4",
-                    for column in columns {
-                        div { class: "grid gap-4",
-                            for image in column {
-                                div {
-                                    img {
-                                        class: "h-auto max-w-full",
-                                        src: image.asset,
+        div { class: "flex flex-col",
+            p {
+                "This is a selected collection of my works throughout each year. It is organized from left to right and top to bottom, with most recent works on the left."
+            }
+            p {
+                "I spend the majority of my time drawing so color is still something I am trying to figure out..."
+            }
+            p { class: "text-base", "Email: allimehcla@gmail.com" }
+            p { class: "text-base", "X: allimehcla" }
+            br {}
+
+            for (year, columns) in sorted() {
+                div { class: "flex flex-col mb-2",
+                    p { class: "text-4xl mb-4", {year} }
+                    div { class: "grid grid-cols-4 gap-4",
+                        for column in columns {
+                            div { class: "grid gap-4",
+                                for image in column {
+                                    div {
+                                        img {
+                                            class: "h-auto max-w-full",
+                                            src: image.asset,
+                                        }
                                     }
                                 }
                             }
