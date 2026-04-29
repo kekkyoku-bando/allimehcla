@@ -9,26 +9,35 @@ on:
 concurrency:
   group: "pages"
   cancel-in-progress: true
+
+permissions:
+  contents: read
+  pages: write          
+  id-token: write
   
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-      
+
+    env:
+      SCCACHE_GHA_ENABLED: true
+
     steps:
+
       - uses: actions/checkout@v4
+      - uses: mozilla-actions/sccache-action@v0.0.9
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
       - uses: cargo-bins/cargo-binstall@main
       - name: Install Dioxus CLI
-        shell: pwsh
         run: cargo binstall dioxus-cli@0.7.6 --no-confirm
         
       - name: Build Dioxus for web
-        shell: pwsh
         run: dx build --platform web --release
         
       - name: Upload artifact
