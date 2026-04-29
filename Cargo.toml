@@ -7,11 +7,8 @@ edition = "2024"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-dioxus = { version = "0.7.6", features = ["fullstack", "router"] }
-serde = "1.0.228"
-base64 = { version = "0.22.1", optional = true }
+dioxus = "0.7.6"
 
 [features]
 default = []
 web = ["dioxus/web"]
-server = ["dioxus/server", "dep:base64"]
