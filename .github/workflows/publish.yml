@@ -1,0 +1,41 @@
+name: Publish to GitHub Pages
+
+on:
+  push:
+    branches: 
+    - "master"
+  workflow_dispatch:
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+  
+jobs:
+  build:
+    runs-on: windows-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+      
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: cargo-bins/cargo-binstall@main
+      - name: Install Dioxus CLI
+        shell: pwsh
+        run: cargo binstall dioxus-cli@0.7.6 --no-confirm
+        
+      - name: Build Dioxus for web
+        shell: pwsh
+        run: dx build --platform web --release
+        
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./target/dx/portfolio/release/web/public"
+          
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
