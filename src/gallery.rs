@@ -310,6 +310,14 @@ static IMAGES: LazyLock<Vec<Image>> = LazyLock::new(|| {
                 year: 2026,
             },
         },
+        Image {
+            asset: asset!("/assets/images/2026_05_01.png"),
+            time: ImageTime::Specific {
+                day: 1,
+                month: 5,
+                year: 2026,
+            },
+        },
     ]
 });
 
