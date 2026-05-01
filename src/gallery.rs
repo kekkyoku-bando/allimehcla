@@ -384,7 +384,6 @@ pub fn Gallery() -> Element {
 
 #[component]
 fn Content(images: ReadSignal<HashMap<Option<u32>, Vec<Image>>>) -> Element {
-    let mut lightbox_image = use_signal(|| None::<Asset>);
     const COLUMNS: usize = 4;
 
     let sorted: Memo<Vec<(String, Vec<Vec<Image>>)>> = use_memo(move || {
@@ -417,6 +416,7 @@ fn Content(images: ReadSignal<HashMap<Option<u32>, Vec<Image>>>) -> Element {
             })
             .collect()
     });
+    let mut lightbox_image: Signal<Option<Asset>> = use_signal(|| None);
 
     rsx! {
         div { class: "flex flex-col",
